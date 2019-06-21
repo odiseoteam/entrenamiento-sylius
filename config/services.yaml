@@ -28,6 +28,16 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    app.listener.admin.menu_builder:
+        class: App\Menu\AdminMenuListener
+        tags:
+            - { name: kernel.event_listener, event: sylius.menu.admin.main, method: addAdminMenuItems }
+
+    app.email_manager:
+        public: true
+        class: App\EmailManager\AppEmailManager
+        arguments: ['@sylius.email_sender']
+
 winzou_state_machine:
     sylius_order_checkout:
         callbacks:
@@ -37,17 +47,62 @@ winzou_state_machine:
                     do: ["@sm.callback.cascade_transition", "apply"]
                     args: ["object", "event", "'complete'", "'sylius_order_checkout'"]
 
-sylius_shop:
-    checkout_resolver:
-        pattern: /checkout/.+
-        route_map:
-            empty_order:
-                route: sylius_shop_cart_summary
-            cart:
-                route: sylius_shop_checkout_address
-            addressed:
-                route: sylius_shop_checkout_select_shipping
-            shipping_selected:
-                route: sylius_shop_checkout_select_payment
-            shipping_skipped:
-                route: sylius_shop_checkout_select_payment
+    app_testimony:
+        class: App\Entity\Testimony # class of your domain object
+        property_path: state            # property of your object holding the actual state (default is "state")
+        graph: app_testimony                   # name of the graph (default is "default")
+        states:
+            - pending_review
+            - published
+            - rejected
+        transitions:
+            publish:
+                from: [pending_review]
+                to: published
+            reject:
+                from: [pending_review]
+                to: rejected
+        callbacks:
+            after:
+                email_on_publish:
+                    on:   'publish'
+                    do:   ['@app.email_manager', 'sendTestimonyApprovedEmail']
+                    args: ['object']
+
+sylius_resource:
+    resources:
+        app.testimony:
+            classes:
+                model: App\Entity\Testimony
+
+sylius_grid:
+    grids:
+        app_admin_testimony:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: App\Entity\Testimony
+            limits: [30, 12, 48]
+            fields:
+                title:
+                    type: string
+                    label: 'Title'
+                description:
+                    type: string
+                state:
+                    type: string
+            actions:
+                main:
+                    create:
+                        type: create
+                item:
+                    update:
+                        type: update
+                    delete:
+                        type: delete
+
+sylius_mailer:
+    emails:
+        testimony_approved:
+            subject: A new testimony has been approved
+            template: Email/testimony_approved.html.twig
