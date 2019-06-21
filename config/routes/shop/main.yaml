@@ -1,0 +1,3 @@
+app_shop_checkout:
+    resource: "checkout.yaml"
+    prefix: /checkout
