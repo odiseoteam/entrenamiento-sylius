@@ -113,6 +113,16 @@ sylius_grid:
                     delete:
                         type: delete
 
+        sylius_admin_product:
+            fields:
+                isOnSale:
+                    position: 1
+                    type: twig
+                    options:
+                        template: "@SyliusUi/Grid/Field/enabled.html.twig"
+                name:
+                    position: 2
+
 sylius_mailer:
     emails:
         testimony_approved:
