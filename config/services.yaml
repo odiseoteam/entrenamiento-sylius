@@ -46,6 +46,11 @@ services:
         class: App\Form\Type\TestimonyTranslationType
         arguments: ['%app.model.testimony_translation.class%']
 
+    app.shipping_method.weight:
+        class: App\Calculator\WeightCalculator
+        tags:
+            - { name: 'sylius.shipping_calculator', calculator: 'weight', label: 'Weight Calculator', form_type: App\Form\Type\Calculator\WeightConfigurationType }
+
 winzou_state_machine:
     sylius_order_checkout:
         callbacks:
