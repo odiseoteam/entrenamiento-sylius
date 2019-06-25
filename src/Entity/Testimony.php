@@ -8,16 +8,23 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\TimestampableInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
+use Sylius\Component\Resource\Model\TranslatableTrait;
 
 /**
  * @Entity
  * @Table(name="app_testimony")
  */
-class Testimony implements ResourceInterface, TimestampableInterface
+class Testimony implements ResourceInterface, TimestampableInterface, TranslatableInterface
 {
     const STATE_PENDING = 'pending_review';
     const STATE_PUBLISHED = 'published';
     const STATE_REJECTED = 'rejected';
+
+    use TranslatableTrait {
+        __construct as private initializeTranslationsCollection;
+        getTranslation as private doGetTranslation;
+    }
 
     /**
      * @var integer
@@ -27,20 +34,6 @@ class Testimony implements ResourceInterface, TimestampableInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="title", type="string", length=255, nullable=false, unique=false)
-     */
-    private $title;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="text", nullable=false, unique=false)
-     */
-    private $description;
 
     /**
      * @var \DateTime $created
@@ -69,6 +62,7 @@ class Testimony implements ResourceInterface, TimestampableInterface
     {
         $this->createdAt = new \DateTime();
         $this->state = self::STATE_PENDING;
+        $this->initializeTranslationsCollection();
     }
 
     public function getId()
@@ -81,7 +75,7 @@ class Testimony implements ResourceInterface, TimestampableInterface
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->getTranslation()->getTitle();
     }
 
     /**
@@ -89,7 +83,7 @@ class Testimony implements ResourceInterface, TimestampableInterface
      */
     public function setTitle($title): void
     {
-        $this->title = $title;
+        $this->getTranslation()->setTitle($title);
     }
 
     /**
@@ -97,7 +91,7 @@ class Testimony implements ResourceInterface, TimestampableInterface
      */
     public function getDescription()
     {
-        return $this->description;
+        return $this->getTranslation()->getDescription();
     }
 
     /**
@@ -105,7 +99,7 @@ class Testimony implements ResourceInterface, TimestampableInterface
      */
     public function setDescription($description): void
     {
-        $this->description = $description;
+        $this->getTranslation()->setDescription($description);
     }
 
     /**
@@ -142,5 +136,13 @@ class Testimony implements ResourceInterface, TimestampableInterface
     public function setUpdatedAt(?\DateTimeInterface $updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createTranslation(): TestimonyTranslation
+    {
+        return new TestimonyTranslation();
     }
 }

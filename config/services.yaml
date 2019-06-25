@@ -38,6 +38,14 @@ services:
         class: App\EmailManager\AppEmailManager
         arguments: ['@sylius.email_sender']
 
+    app.form.type.testimony:
+        class: App\Form\Type\TestimonyType
+        arguments: ['%app.model.testimony.class%']
+
+    app.form.type.testimony_translation:
+        class: App\Form\Type\TestimonyTranslationType
+        arguments: ['%app.model.testimony_translation.class%']
+
 winzou_state_machine:
     sylius_order_checkout:
         callbacks:
@@ -74,6 +82,10 @@ sylius_resource:
         app.testimony:
             classes:
                 model: App\Entity\Testimony
+                form: App\Form\Type\TestimonyType
+            translation:
+                classes:
+                    model: App\Entity\TestimonyTranslation
 
 sylius_grid:
     grids:

@@ -11,8 +11,8 @@ class AdminMenuListener
         $menu = $event->getMenu();
 
         $testimony = $menu->getChild('catalog')
-            ->addChild('testimony')
-            ->setLabel('Testimony')
+            ->addChild('testimony', ['route' => 'app_testimony_index'])
+            ->setLabel('app.ui.testimonies')
             ->setLabelAttribute('icon', 'talk')
         ;
     }
