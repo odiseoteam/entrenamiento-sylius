@@ -10,6 +10,7 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\TimestampableInterface;
 use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Model\TranslatableTrait;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @Entity
@@ -48,6 +49,7 @@ class Testimony implements ResourceInterface, TimestampableInterface, Translatab
      *
      * @Gedmo\Timestampable(on="update")
      * @ORM\Column(type="datetime")
+     * @JMS\Exclude();
      */
     private $updatedAt;
 
