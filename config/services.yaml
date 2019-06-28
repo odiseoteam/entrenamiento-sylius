@@ -51,6 +51,39 @@ services:
         tags:
             - { name: 'sylius.shipping_calculator', calculator: 'weight', label: 'Weight Calculator', form_type: App\Form\Type\Calculator\WeightConfigurationType }
 
+    # Payum
+    app.payum_gateway_factory.aplyca:
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        arguments: [App\Payum\Aplyca\AplycaGatewayFactory]
+        public: true
+        tags:
+            - { name: payum.gateway_factory_builder, factory: aplyca }
+
+    app.payum_action.aplyca.capture:
+        class: App\Payum\Aplyca\Action\CaptureAction
+        public: true
+        arguments: ['@app.payum.aplyca.api']
+        tags:
+            - { name: payum.action, factory: aplyca, alias: payum.action.capture }
+
+    app.payum_action.aplyca.convert:
+        class: App\Payum\Aplyca\Action\ConvertAction
+        public: true
+        tags:
+            - { name: payum.action, factory: aplyca, alias: payum.action.convert }
+
+    app.payum.aplyca.api:
+        class: App\Payum\Aplyca\Api
+        public: true
+        tags:
+            - { name: payum.api, factory: aplyca }
+
+    app.form.type.gateway_configuration.aplyca:
+        class: App\Form\Type\AplycaGatewayConfigurationType
+        tags:
+        - { name: sylius.gateway_configuration_type, type: aplyca, label: "Aplyca" }
+        - { name: form.type }
+
 winzou_state_machine:
     sylius_order_checkout:
         callbacks:
@@ -133,3 +166,8 @@ sylius_mailer:
         testimony_approved:
             subject: A new testimony has been approved
             template: Email/testimony_approved.html.twig
+
+payum:
+    gateways:
+        aplyca:
+            factory: aplyca
