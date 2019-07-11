@@ -5,13 +5,14 @@ sylius_admin:
 app_testimony:
     resource: |
         alias: app.testimony
+        section: admin
         templates: SyliusAdminBundle:Crud
         grid: app_admin_testimony
         except: ['show']
     prefix: /admin
     type: sylius.resource
 
-app_testimony_approve:
+app_admin_testimony_approve:
     path: /admin/testimonies/{id}/approve
     defaults:
         _controller: app.controller.testimony:applyStateMachineTransitionAction
@@ -21,4 +22,4 @@ app_testimony_approve:
                 graph: app_testimony
                 transition: publish
             redirect:
-                route: app_testimony_index
+                route: app_admin_testimony_index

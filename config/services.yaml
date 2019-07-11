@@ -126,6 +126,9 @@ sylius_resource:
                     model: App\Entity\TestimonyTranslation
 
 sylius_grid:
+    templates:
+        action:
+            testimonyApprove: "Grid/Action/testimonyApprove.html.twig"
     grids:
         app_admin_testimony:
             driver:
@@ -146,6 +149,14 @@ sylius_grid:
                     create:
                         type: create
                 item:
+                    approve:
+                        type: testimonyApprove
+                        label: Approve
+                        options:
+                            link:
+                                route: app_admin_testimony_approve
+                                parameters:
+                                    id: resource.id
                     update:
                         type: update
                     delete:

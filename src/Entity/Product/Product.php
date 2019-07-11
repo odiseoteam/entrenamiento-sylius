@@ -23,6 +23,13 @@ class Product extends BaseProduct
      */
     protected $isOnSale;
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->isOnSale = false;
+    }
+
     protected function createTranslation(): ProductTranslationInterface
     {
         return new ProductTranslation();
