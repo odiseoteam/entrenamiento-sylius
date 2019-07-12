@@ -1,1 +1,7 @@
+odiseo_sylius_testimony_plugin_admin:
+    resource: "@OdiseoSyliusTestimonyPlugin/Resources/config/routing/admin.yml"
+    prefix: /admin
 
+odiseo_sylius_testimony_plugin_api:
+    resource: "@OdiseoSyliusTestimonyPlugin/Resources/config/routing/api.yml"
+    prefix: /api/v{version}

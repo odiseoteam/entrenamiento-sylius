@@ -1,25 +1,3 @@
 sylius_admin:
     resource: "@SyliusAdminBundle/Resources/config/routing.yml"
     prefix: /admin
-
-app_testimony:
-    resource: |
-        alias: app.testimony
-        section: admin
-        templates: SyliusAdminBundle:Crud
-        grid: app_admin_testimony
-        except: ['show']
-    prefix: /admin
-    type: sylius.resource
-
-app_admin_testimony_approve:
-    path: /admin/testimonies/{id}/approve
-    defaults:
-        _controller: app.controller.testimony:applyStateMachineTransitionAction
-        _sylius:
-            csrf_protection: false
-            state_machine:
-                graph: app_testimony
-                transition: publish
-            redirect:
-                route: app_admin_testimony_index

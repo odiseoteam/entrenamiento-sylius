@@ -3,6 +3,9 @@
 parameters:
     locale: en_US
 
+imports:
+    - { resource: "@OdiseoSyliusTestimonyPlugin/Resources/config/config.yml" }
+
 services:
     # Default configuration for services in *this* file
     _defaults:
@@ -27,24 +30,6 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-
-    app.listener.admin.menu_builder:
-        class: App\Menu\AdminMenuListener
-        tags:
-            - { name: kernel.event_listener, event: sylius.menu.admin.main, method: addAdminMenuItems }
-
-    app.email_manager:
-        public: true
-        class: App\EmailManager\AppEmailManager
-        arguments: ['@sylius.email_sender']
-
-    app.form.type.testimony:
-        class: App\Form\Type\TestimonyType
-        arguments: ['%app.model.testimony.class%']
-
-    app.form.type.testimony_translation:
-        class: App\Form\Type\TestimonyTranslationType
-        arguments: ['%app.model.testimony_translation.class%']
 
     app.shipping_method.weight:
         class: App\Calculator\WeightCalculator
@@ -93,75 +78,8 @@ winzou_state_machine:
                     do: ["@sm.callback.cascade_transition", "apply"]
                     args: ["object", "event", "'complete'", "'sylius_order_checkout'"]
 
-    app_testimony:
-        class: App\Entity\Testimony # class of your domain object
-        property_path: state            # property of your object holding the actual state (default is "state")
-        graph: app_testimony                   # name of the graph (default is "default")
-        states:
-            - pending_review
-            - published
-            - rejected
-        transitions:
-            publish:
-                from: [pending_review]
-                to: published
-            reject:
-                from: [pending_review]
-                to: rejected
-        callbacks:
-            after:
-                email_on_publish:
-                    on:   'publish'
-                    do:   ['@app.email_manager', 'sendTestimonyApprovedEmail']
-                    args: ['object']
-
-sylius_resource:
-    resources:
-        app.testimony:
-            classes:
-                model: App\Entity\Testimony
-                form: App\Form\Type\TestimonyType
-            translation:
-                classes:
-                    model: App\Entity\TestimonyTranslation
-
 sylius_grid:
-    templates:
-        action:
-            testimonyApprove: "Grid/Action/testimonyApprove.html.twig"
     grids:
-        app_admin_testimony:
-            driver:
-                name: doctrine/orm
-                options:
-                    class: App\Entity\Testimony
-            limits: [30, 12, 48]
-            fields:
-                title:
-                    type: string
-                    label: 'Title'
-                description:
-                    type: string
-                state:
-                    type: string
-            actions:
-                main:
-                    create:
-                        type: create
-                item:
-                    approve:
-                        type: testimonyApprove
-                        label: Approve
-                        options:
-                            link:
-                                route: app_admin_testimony_approve
-                                parameters:
-                                    id: resource.id
-                    update:
-                        type: update
-                    delete:
-                        type: delete
-
         sylius_admin_product:
             fields:
                 isOnSale:
@@ -171,12 +89,6 @@ sylius_grid:
                         template: "@SyliusUi/Grid/Field/enabled.html.twig"
                 name:
                     position: 2
-
-sylius_mailer:
-    emails:
-        testimony_approved:
-            subject: A new testimony has been approved
-            template: Email/testimony_approved.html.twig
 
 payum:
     gateways:

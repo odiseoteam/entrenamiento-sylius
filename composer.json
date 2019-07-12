@@ -16,6 +16,7 @@
     ],
     "require": {
         "php": "^7.2",
+        "odiseoteam/sylius-testimony-plugin": "^1.0",
         "sylius/sylius": "~1.5.0@rc",
         "symfony/dotenv": "^4.2",
         "symfony/flex": "^1.2"
